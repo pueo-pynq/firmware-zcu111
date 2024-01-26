@@ -160,7 +160,7 @@ def lmx_sync():
         _write_LMK_regs(sync_regs, lmk)
     print("Turning off SYNC")
     for lmk in lmk_devices:
-        _write_LMX_regs(nosync_regs, lmk)
+        _write_LMK_regs(nosync_regs, lmk)
         
 def set_rf_clks(lmkfn='ZCU111_LMK_24.txt',
                 lmxfn='ZCU111_LMX.txt',
