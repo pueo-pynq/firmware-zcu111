@@ -73,8 +73,15 @@ set_cc_paths $aclkdiv2 $psclk $clktypelist
 
 # extra stuff
 set_property BITSTREAM.CONFIG.UNUSEDPIN PULLNONE [current_design]
-set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
-set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
-set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
-connect_debug_port dbg_hub/clk ps_clk
+
+# avoid doofball errors
+set my_dbg_hub [get_debug_cores dbg_hub -quiet]
+if {[llength $my_dbg_hub] > 0} {
+    set_property C_CLK_INPUT_FREQ_HZ 300000000 $my_dbg_hub
+    set_property C_ENABLE_CLK_DIVIDER false $my_dbg_hub
+    set_property C_USER_SCAN_CHAIN 1 $my_dbg_hub
+    connect_debug_port dbg_hub/clk ps_clk
+} else {
+    puts "skipping debug hub commands, not inserted yet"
+}
