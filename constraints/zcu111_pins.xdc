@@ -36,11 +36,11 @@ set_property -dict { PACKAGE_PIN  Y2 } [get_ports ADC7_VIN_P]
 set_property -dict { PACKAGE_PIN  Y1 } [get_ports ADC7_VIN_N]
 
 # ZCU111 constraints
-set_property -dict { IOSTANDARD LVDS_25 PACKAGE_PIN AK17 } [get_ports SYSREF_FPGA_P]
-set_property -dict { IOSTANDARD LVDS_25 PACKAGE_PIN AK16 } [get_ports SYSREF_FPGA_N]
+set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE PACKAGE_PIN AK17 } [get_ports SYSREF_FPGA_P]
+set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE PACKAGE_PIN AK16 } [get_ports SYSREF_FPGA_N]
 
 set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE PACKAGE_PIN AL16 } [get_ports FPGA_REFCLK_IN_P]
 set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE PACKAGE_PIN AL15 } [get_ports FPGA_REFCLK_IN_N]
 
-set_property -dict { IOSTANDARD LVCMOS33 PACKAGE_PIN AR13 } [get_ports {PL_USER_LED[0]}]
-set_property -dict { IOSTANDARD LVCMOS33 PACKAGE_PIN AP13 } [get_ports {PL_USER_LED[1]}]
+set_property -dict { IOSTANDARD LVCMOS18 PACKAGE_PIN AR13 } [get_ports {PL_USER_LED[0]}]
+set_property -dict { IOSTANDARD LVCMOS18 PACKAGE_PIN AP13 } [get_ports {PL_USER_LED[1]}]
