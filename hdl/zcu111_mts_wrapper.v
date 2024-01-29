@@ -10,7 +10,9 @@
 `timescale 1 ps / 1 ps
 
 module zcu111_mts_wrapper
-   (S_AXIS_0_tdata,
+   (
+    // input AXI4-Streams to the ADC BRAM capture
+    S_AXIS_0_tdata,
     S_AXIS_0_tready,
     S_AXIS_0_tvalid,
     S_AXIS_1_tdata,
@@ -22,8 +24,10 @@ module zcu111_mts_wrapper
     S_AXIS_3_tdata,
     S_AXIS_3_tready,
     S_AXIS_3_tvalid,
+    
     Vp_Vn_0_v_n,
     Vp_Vn_0_v_p,
+    // adc stuff
     adc0_clk_0_clk_n,
     adc0_clk_0_clk_p,
     adc1_clk_0_clk_n,
@@ -56,6 +60,16 @@ module zcu111_mts_wrapper
     m32_axis_0_tdata,
     m32_axis_0_tready,
     m32_axis_0_tvalid,
+    // dac stuff. These are in the div2 clock domain
+    dac1_clk_0_clk_p,
+    dac1_clk_0_clk_n,
+    s12_axis_0_tdata,
+    s12_axis_0_tready,
+    s12_axis_0_tvalid,
+    s13_axis_0_tdata,
+    s13_axis_0_tready,
+    s13_axis_0_tvalid,    
+    
     s_axi_aclk_0,
     s_axi_aresetn_0,
     s_axis_aclk_0,
@@ -63,6 +77,7 @@ module zcu111_mts_wrapper
     sysref_in_0_diff_n,
     sysref_in_0_diff_p,
     user_sysref_adc_0,
+    // adc
     vin0_01_0_v_n,
     vin0_01_0_v_p,
     vin0_23_0_v_n,
@@ -79,6 +94,12 @@ module zcu111_mts_wrapper
     vin3_01_0_v_p,
     vin3_23_0_v_n,
     vin3_23_0_v_p,
+    // dac
+    vout12_0_v_p,
+    vout12_0_v_n,
+    vout13_0_v_p,
+    vout13_0_v_n,
+    
     clk_adc0_0,
     pl_clk0,
     pl_resetn0);
@@ -155,6 +176,22 @@ module zcu111_mts_wrapper
   output pl_clk0;
   output pl_resetn0;
   output clk_adc0_0;
+  
+  input dac1_clk_0_clk_p;
+  input dac1_clk_0_clk_n;
+  
+  input [255:0] s12_axis_0_tdata;
+  input         s12_axis_0_tvalid;
+  output        s12_axis_0_tready;
+  input [255:0] s13_axis_0_tdata;
+  input         s13_axis_0_tvalid;
+  output        s13_axis_0_tready;
+  
+  output vout12_0_v_p;
+  output vout12_0_v_n;
+  output vout13_0_v_p;
+  output vout13_0_v_n;
+  
 
   wire [127:0]S_AXIS_0_tdata;
   wire S_AXIS_0_tready;
@@ -298,5 +335,18 @@ module zcu111_mts_wrapper
         .vin3_23_0_v_p(vin3_23_0_v_p),
         .clk_adc0_0(clk_adc0_0),
         .pl_clk0(pl_clk0),
-        .pl_resetn0(pl_resetn0));
+        .pl_resetn0(pl_resetn0),
+        .dac1_clk_0_clk_p(dac1_clk_0_clk_p),
+        .dac1_clk_0_clk_n(dac1_clk_0_clk_n),
+        .vout12_0_v_p(vout12_0_v_p),
+        .vout12_0_v_n(vout12_0_v_n),
+        .vout13_0_v_p(vout13_0_v_p),
+        .vout13_0_v_n(vout13_0_v_n),
+        .s12_axis_0_tdata(s12_axis_0_tdata),
+        .s12_axis_0_tvalid(s12_axis_0_tvalid),
+        .s12_axis_0_tready(s12_axis_0_tready),
+        .s13_axis_0_tdata(s13_axis_0_tdata),
+        .s13_axis_0_tready(s13_axis_0_tready),
+        .s13_axis_0_tvalid(s13_axis_0_tvalid)        
+        );
 endmodule
