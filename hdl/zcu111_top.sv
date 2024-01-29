@@ -35,6 +35,13 @@ module zcu111_top(
         input ADC7_VIN_P,       // Y2
         input ADC7_VIN_N,       // Y1        
 
+        input DAC4_CLK_P,       // N5
+        input DAC4_CLK_N,       // N4
+        output DAC6_VOUT_P,     // E2
+        output DAC6_VOUT_N,     // E1
+        output DAC7_VOUT_P,     // C2
+        output DAC7_VOUT_N,     // C1
+
         input SYSREF_P,         // U5
         input SYSREF_N,         // U4
         // PL clock to capture SYSREF in PL (24 MHz)
@@ -67,6 +74,11 @@ module zcu111_top(
     `DEFINE_AXI4S_MIN_IF( adc5_ , 128 );
     `DEFINE_AXI4S_MIN_IF( adc6_ , 128 );
     `DEFINE_AXI4S_MIN_IF( adc7_ , 128 );
+    // DAC AXI4 Stream
+    `DEFINE_AXI4S_MIN_IF( dac6_ , 256 );
+    `DEFINE_AXI4S_MIN_IF( dac7_ , 256 );
+    
+    
     // SYSREF capture register
     (* IOB = "TRUE" *)
     reg sysref_reg_slowclk = 0;
@@ -148,9 +160,19 @@ module zcu111_top(
     always @(posedge ref_clk) sysref_reg_slowclk <= sys_ref;
     always @(posedge aclk) sysref_reg <= sysref_reg_slowclk;
     
-
     generate
          if (THIS_DESIGN == "MTS") begin : MTS
+            dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
+                                      .aresetn(1'b1),
+                                      .aclk_div2(aclk_div2),
+                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , adc0_ ),
+                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
+            dac_xfer_x2 u_dac13_xfer( .aclk(aclk),
+                                      .aresetn(1'b1),
+                                      .aclk_div2(aclk_div2),
+                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , adc1_ ),
+                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
+                                 
             zcu111_mts_wrapper u_ps( .Vp_Vn_0_v_p( VP ),
                                          .Vp_Vn_0_v_n( VN ),
                                          // sysref
@@ -201,6 +223,17 @@ module zcu111_top(
                                          `CONNECT_AXI4S_MIN_IF( S_AXIS_1_ , adc1_ ),
                                          `CONNECT_AXI4S_MIN_IF( S_AXIS_2_ , adc2_ ),
                                          `CONNECT_AXI4S_MIN_IF( S_AXIS_3_ , adc3_ ),
+                                         
+                                         .dac1_clk_0_clk_p(DAC4_CLK_P),
+                                         .dac1_clk_0_clk_n(DAC4_CLK_N),
+                                         
+                                         .vout12_0_v_p(DAC6_VOUT_P),
+                                         .vout12_0_v_n(DAC6_VOUT_N),
+                                         .vout13_0_v_p(DAC7_VOUT_P),
+                                         .vout13_0_v_n(DAC7_VOUT_N),
+                                         
+                                         `CONNECT_AXI4S_MIN_IF( s12_axis_0_ , dac6_ ),
+                                         `CONNECT_AXI4S_MIN_IF( s13_axis_0_ , dac7_ ),
 
                                          .pl_clk0( ps_clk ),
                                          .pl_resetn0( ps_reset ),
