@@ -1,0 +1,7 @@
+hdl/adc_cap_x2.v
+verilog-library-barawn/hdl/flag_sync.v
+hdl/pl_gpio_adc_if.v
+bd/zcu111_mts/zcu111_mts.bd
+hdl/dac_xfer_x2.v
+hdl/zcu111_mts_wrapper.v
+hdl/zcu111_top.sv
