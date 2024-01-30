@@ -7,14 +7,14 @@
 # Modified AGAIN to make it easier to change!
 
 # Set the project name
-set _xil_proj_name "firmware-zcu111"
+set _xil_proj_name_ "firmware-zcu111"
 set _this_part xczu28dr-ffvg1517-2-e
 
 # Set the reference directory for source file relative paths (by default the value is script directory path)
 set origin_dir "."
 
 variable script_file
-set script_file $_xil_proj_name.tcl
+set script_file ${_xil_proj_name_}.tcl
 
 # Help information for this script
 proc print_help {} {
