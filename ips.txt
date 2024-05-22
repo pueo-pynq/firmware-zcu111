@@ -1,2 +1,4 @@
+sim/ip/axi_master_vip/axi_master_vip.xci
+ip/boardman_ila/boardman_ila.xci
 ip/clk_count_vio/clk_count_vio.xci
 ip/slow_refclk_wiz/slow_refclk_wiz.xci
