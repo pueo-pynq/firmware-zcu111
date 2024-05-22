@@ -99,10 +99,15 @@ module zcu111_mts_wrapper
     vout12_0_v_n,
     vout13_0_v_p,
     vout13_0_v_n,
+
+    // uart
+    UART_rxd,
+    UART_txd,    
     
     clk_adc0_0,
     pl_clk0,
-    pl_resetn0);
+    pl_resetn0
+    );
   input [127:0]S_AXIS_0_tdata;
   output S_AXIS_0_tready;
   input S_AXIS_0_tvalid;
@@ -172,6 +177,9 @@ module zcu111_mts_wrapper
   input vin3_01_0_v_p;
   input vin3_23_0_v_n;
   input vin3_23_0_v_p;
+
+  input UART_rxd;
+  output UART_txd;
   
   output pl_clk0;
   output pl_resetn0;
@@ -347,6 +355,9 @@ module zcu111_mts_wrapper
         .s12_axis_0_tready(s12_axis_0_tready),
         .s13_axis_0_tdata(s13_axis_0_tdata),
         .s13_axis_0_tready(s13_axis_0_tready),
-        .s13_axis_0_tvalid(s13_axis_0_tvalid)        
+        .s13_axis_0_tvalid(s13_axis_0_tvalid),
+        
+        .UART_txd(UART_txd),
+        .UART_rxd(UART_rxd)   
         );
 endmodule
