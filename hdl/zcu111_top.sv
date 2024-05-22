@@ -159,6 +159,27 @@ module zcu111_top(
     
     always @(posedge ref_clk) sysref_reg_slowclk <= sys_ref;
     always @(posedge aclk) sysref_reg <= sysref_reg_slowclk;
+
+    wire uart_from_ps;
+    wire uart_to_ps;
+    
+    `DEFINE_WB_IF( bm_ , 22, 32);
+    boardman_wrapper #(.CLOCK_RATE(100000000),
+                       .BAUD_RATE(1000000),
+                       .USE_ADDRESS("FALSE"))
+                       u_bm(.wb_clk_i(ps_clk),
+                            .wb_rst_i(1'b0),
+                            `CONNECT_WBM_IFM( wb_ , bm_ ),
+                            .burst_size_i(2'b00),
+                            .address_i(8'h00),
+                            .RX(uart_from_ps),
+                            .TX(uart_to_ps));
+
+    // dumb testing    
+    assign bm_ack_i = bm_cyc_o && bm_stb_o;
+    assign bm_dat_i = 32'h12345678;
+    assign bm_err_i = 1'b0;
+    assign bm_rty_i = 1'b0;
     
     generate
          if (THIS_DESIGN == "MTS") begin : MTS
@@ -175,6 +196,11 @@ module zcu111_top(
                                  
             zcu111_mts_wrapper u_ps( .Vp_Vn_0_v_p( VP ),
                                          .Vp_Vn_0_v_n( VN ),
+                                         
+                                         // uart for local
+                                         .UART_txd(uart_from_ps),
+                                         .UART_rxd(uart_to_ps),
+                                         
                                          // sysref
                                          .sysref_in_0_diff_p( SYSREF_P ),
                                          .sysref_in_0_diff_n( SYSREF_N ),
