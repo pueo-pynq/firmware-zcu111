@@ -66,6 +66,7 @@ set_max_delay -datapath_only -from $sync_sync_regs -to $sync_syncB_regs 10.000
 
 # magic grab all of the CUSTOM_CC_SRC/DST marked
 set_cc_paths $aclk $psclk $clktypelist
+set_cc_paths $psclk $aclk $clktypelist
 set_cc_paths $refclk $psclk $clktypelist
 
 set_cc_paths $psclk $aclkdiv2 $clktypelist

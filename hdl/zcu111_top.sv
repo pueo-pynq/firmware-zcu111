@@ -53,7 +53,7 @@ module zcu111_top(
         output [1:0] PL_USER_LED        // { AP13, AR13 }
     );
 
-   parameter	     THIS_DESIGN = "MTS";
+   parameter	     THIS_DESIGN = "BIQUAD";
    
     
     (* KEEP = "TRUE"  *)
@@ -78,6 +78,26 @@ module zcu111_top(
     `DEFINE_AXI4S_MIN_IF( dac6_ , 256 );
     `DEFINE_AXI4S_MIN_IF( dac7_ , 256 );
     
+    // silliness
+    function [95:0] unpack;
+        input [127:0] data_in;
+        integer i;
+        begin
+            for (i=0;i<8;i=i+1) begin
+                unpack[12*i +: 12] = data_in[(16*i+4) +: 12];
+            end
+        end
+    endfunction
+    function [127:0] pack;
+        input [95:0] data_in;
+        integer i;
+        begin
+            for (i=0;i<8;i=i+1) begin
+                pack[(16*i+4) +: 12] = data_in[12*i +: 12];
+                pack[(16*i) +: 4] = {4{1'b0}};
+            end
+        end
+    endfunction    
     
     // SYSREF capture register
     (* IOB = "TRUE" *)
@@ -176,22 +196,77 @@ module zcu111_top(
                             .TX(uart_to_ps));
 
     // dumb testing    
-    assign bm_ack_i = bm_cyc_o && bm_stb_o;
-    assign bm_dat_i = 32'h12345678;
-    assign bm_err_i = 1'b0;
-    assign bm_rty_i = 1'b0;
+    `DEFINE_WB_IF( fir0_ , 7, 32);
+    `DEFINE_WB_IF( fir1_ , 7, 32);
+    // stupidest intercon ever
+    assign bm_ack_i = (bm_adr_o[7]) ? fir1_ack_i : fir0_ack_i;
+    assign bm_err_i = (bm_adr_o[7]) ? fir1_err_i : fir0_err_i;
+    assign bm_rty_i = (bm_adr_o[7]) ? fir1_rty_i : fir0_rty_i;
+    assign bm_dat_i = (bm_adr_o[7]) ? fir1_dat_i : fir0_dat_i;
     
+    assign fir0_cyc_o = bm_cyc_o && !bm_adr_o[7];
+    assign fir1_cyc_o = bm_cyc_o && bm_adr_o[7];
+    assign fir0_stb_o = bm_stb_o;
+    assign fir1_stb_o = bm_stb_o;
+    assign fir0_adr_o = bm_adr_o[6:0];
+    assign fir1_adr_o = bm_adr_o[6:0];
+    assign fir0_dat_o = bm_dat_o;
+    assign fir1_dat_o = bm_dat_o;
+    assign fir0_we_o = bm_we_o;
+    assign fir1_we_o = bm_we_o;
+    assign fir0_sel_o = bm_sel_o;
+    assign fir1_sel_o = bm_sel_o;
+        
     generate
-         if (THIS_DESIGN == "MTS") begin : MTS
+         if (THIS_DESIGN == "BIQUAD") begin : MTS
+            wire [95:0] fir0_out;
+            wire [95:0] fir1_out;
+            `DEFINE_AXI4S_MIN_IF( fir0_ , 128);
+            `DEFINE_AXI4S_MIN_IF( fir1_ , 128);
+            assign fir0_tdata = unpack(fir0_out);
+            assign fir0_tvalid = 1'b1;
+            assign fir1_tdata = unpack(fir1_out);
+            assign fir1_tvalid = 1'b1;
+
+            biquad8_wrapper #(.NBITS(12),
+                              .NFRAC(0),
+                              .NSAMP(8),
+                              .OUTBITS(12),
+                              .OUTFRAC(0),
+                              .WBCLKTYPE("PSCLK"),
+                              .CLKTYPE("ACLK"))
+                u_biquad8_A(.wb_clk_i(ps_clk),
+                          .wb_rst_i(1'b0),
+                          `CONNECT_WBS_IFM( wb_ , fir0_ ),
+                          .clk_i(aclk),
+                          .global_update_i(1'b0),
+                          .dat_i(unpack(adc0_tdata)),
+                          .dat_o(fir0_out));   
+
+            biquad8_wrapper #(.NBITS(12),
+                              .NFRAC(0),
+                              .NSAMP(8),
+                              .OUTBITS(12),
+                              .OUTFRAC(0),
+                              .WBCLKTYPE("PSCLK"),
+                              .CLKTYPE("ACLK"))
+                u_biquad8_B(.wb_clk_i(ps_clk),
+                          .wb_rst_i(1'b0),
+                          `CONNECT_WBS_IFM( wb_ , fir1_ ),
+                          .clk_i(aclk),
+                          .global_update_i(1'b0),
+                          .dat_i(unpack(adc1_tdata)),
+                          .dat_o(fir1_out));   
+
             dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
                                       .aresetn(1'b1),
                                       .aclk_div2(aclk_div2),
-                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , adc0_ ),
+                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , fir0_ ),
                                       `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
             dac_xfer_x2 u_dac13_xfer( .aclk(aclk),
                                       .aresetn(1'b1),
                                       .aclk_div2(aclk_div2),
-                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , adc1_ ),
+                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , fir1_ ),
                                       `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
                                  
             zcu111_mts_wrapper u_ps( .Vp_Vn_0_v_p( VP ),
