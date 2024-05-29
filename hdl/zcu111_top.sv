@@ -223,9 +223,9 @@ module zcu111_top(
             wire [95:0] fir1_out;
             `DEFINE_AXI4S_MIN_IF( fir0_ , 128);
             `DEFINE_AXI4S_MIN_IF( fir1_ , 128);
-            assign fir0_tdata = unpack(fir0_out);
+            assign fir0_tdata = pack(fir0_out);
             assign fir0_tvalid = 1'b1;
-            assign fir1_tdata = unpack(fir1_out);
+            assign fir1_tdata = pack(fir1_out);
             assign fir1_tvalid = 1'b1;
 
             biquad8_wrapper #(.NBITS(12),
