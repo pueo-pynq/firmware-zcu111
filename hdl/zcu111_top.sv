@@ -216,6 +216,8 @@ module zcu111_top(
     assign fir1_we_o = bm_we_o;
     assign fir0_sel_o = bm_sel_o;
     assign fir1_sel_o = bm_sel_o;
+    
+    wire capture;
         
     generate
          if (THIS_DESIGN == "BIQUAD") begin : MTS
@@ -228,6 +230,55 @@ module zcu111_top(
             assign fir1_tdata = pack(fir1_out);
             assign fir1_tvalid = 1'b1;
 
+            // To test the biquad8_pole_fir we
+            // need to do a bit of jiggery-pokery.
+            // 
+            `DEFINE_AXI4S_MIN_IF( gate0_ , 128);
+            `DEFINE_AXI4S_MIN_IF( gate1_ , 128);
+            `DEFINE_AXI4S_MIN_IF( pole0_ , 128);
+            `DEFINE_AXI4S_MIN_IF( pole1_ , 128);
+            
+            assign pole0_tdata = {128{1'b0}};
+            assign pole0_tvalid = 1'b1;
+            assign pole1_tdata = {128{1'b0}};
+            assign pole1_tvalid = 1'b1;
+                        
+            reg [127:0] adc0_rereg = {128{1'b0}};
+            reg [127:0] adc1_rereg = {128{1'b0}};
+            reg adc_gate = 0;
+            reg [1:0] capture_rereg = {2{1'b0}};
+            wire capture_delay;
+            wire mid_gate_delay;
+            wire gate_delay_done;
+            SRLC32E u_gate_delay(.D(capture_rereg[0] && !capture_rereg[1]),
+                                 .CLK(aclk),
+                                 .CE(1'b1),
+                                 .Q31(capture_delay));
+            SRLC32E u_delay_mid(.D(capture_delay),
+                                .CLK(aclk),
+                                .CE(1'b1),
+                                .Q31(mid_gate_delay));                           
+            SRLC32E u_delay_done(.D(mid_gate_delay),
+                                 .CLK(aclk),
+                                 .CE(1'b1),
+                                 .Q31(gate_delay_done));                                 
+            always @(posedge aclk) begin
+                if (capture_delay) adc_gate <= 1'b1;
+                else if (gate_delay_done) adc_gate <= 1'b0;
+                
+                if (adc_gate) adc0_rereg <= adc0_tdata;
+                else adc0_rereg <= {128{1'b0}};
+                
+                if (adc_gate) adc1_rereg <= adc1_tdata;
+                else adc1_rereg <= {128{1'b0}};
+            end
+            
+            assign gate0_tdata = adc0_rereg;
+            assign gate0_tvalid = 1'b1;
+            
+            assign gate1_tdata = adc1_rereg;
+            assign gate1_tvalid = 1'b1;
+            
             biquad8_wrapper #(.NBITS(12),
                               .NFRAC(0),
                               .NSAMP(8),
@@ -275,7 +326,8 @@ module zcu111_top(
                                          // uart for local
                                          .UART_txd(uart_from_ps),
                                          .UART_rxd(uart_to_ps),
-                                         
+                                         // indicates someone said capture
+                                         .capture_o(capture),
                                          // sysref
                                          .sysref_in_0_diff_p( SYSREF_P ),
                                          .sysref_in_0_diff_n( SYSREF_N ),
@@ -320,10 +372,10 @@ module zcu111_top(
                                          .s_axis_aclk_0( aclk ),
                                          .s_axis_aresetn_0( 1'b1 ),
                                          // feed back to inputs
-                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_0_ , adc0_ ),
-                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_1_ , adc1_ ),
-                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_2_ , adc2_ ),
-                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_3_ , adc3_ ),
+                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_0_ , gate0_ ),
+                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_1_ , gate1_ ),
+                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_2_ , pole0_ ),
+                                         `CONNECT_AXI4S_MIN_IF( S_AXIS_3_ , pole1_ ),
                                          
                                          .dac1_clk_0_clk_p(DAC4_CLK_P),
                                          .dac1_clk_0_clk_n(DAC4_CLK_N),

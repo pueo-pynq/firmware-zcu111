@@ -103,6 +103,8 @@ module zcu111_mts_wrapper
     // uart
     UART_rxd,
     UART_txd,    
+    // capture
+    capture_o,
     
     clk_adc0_0,
     pl_clk0,
@@ -199,6 +201,8 @@ module zcu111_mts_wrapper
   output vout12_0_v_n;
   output vout13_0_v_p;
   output vout13_0_v_n;
+  
+  output capture_o;
   
 
   wire [127:0]S_AXIS_0_tdata;
@@ -357,6 +361,7 @@ module zcu111_mts_wrapper
         .s13_axis_0_tready(s13_axis_0_tready),
         .s13_axis_0_tvalid(s13_axis_0_tvalid),
         
+        .capture_o(capture_o),
         .UART_txd(UART_txd),
         .UART_rxd(UART_rxd)   
         );

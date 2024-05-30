@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xB196AD9A12017A8E",
+      "boundary_crc": "0xE9CDF5FFFBBB9FC0",
       "device": "xczu28dr-ffvg1517-2-e",
       "name": "zcu111_mts",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
@@ -1517,6 +1517,9 @@
       },
       "user_sysref_adc_0": {
         "direction": "I"
+      },
+      "capture_o": {
+        "direction": "O"
       }
     },
     "components": {
@@ -7219,7 +7222,8 @@
           "adc_cap_0/capture",
           "adc_cap_1/capture",
           "adc_cap_2/capture",
-          "adc_cap_3/capture"
+          "adc_cap_3/capture",
+          "capture_o"
         ]
       },
       "pl_gpio_adc_if_0_gpio_to_ps": {
@@ -7257,8 +7261,8 @@
           "axi_smc/aclk",
           "rst_s_axi_aclk_0_187M/slowest_sync_clk",
           "zynq_ultra_ps_e_0/maxihpm1_fpd_aclk",
-          "pl_gpio_adc_if_0/adc_div2_clk",
-          "usp_rf_data_converter_0/s1_axis_aclk"
+          "usp_rf_data_converter_0/s1_axis_aclk",
+          "pl_gpio_adc_if_0/adc_div2_clk"
         ]
       },
       "s_axi_aresetn_0_1": {
