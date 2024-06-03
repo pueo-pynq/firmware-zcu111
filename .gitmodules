@@ -1,3 +1,6 @@
 [submodule "verilog-library-barawn"]
 	path = verilog-library-barawn
 	url = https://github.com/barawn/verilog-library-barawn
+[submodule "pueo-pynq-designs"]
+	path = pueo-pynq-designs
+	url = https://github.com/pueo-pynq/pueo-pynq-designs
