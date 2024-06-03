@@ -18,7 +18,10 @@ module basic_design(
         `HOST_NAMED_PORTS_AXI4S_MIN_IF( buf0_ , 128 ),
         `HOST_NAMED_PORTS_AXI4S_MIN_IF( buf1_ , 128 ),
         `HOST_NAMED_PORTS_AXI4S_MIN_IF( buf2_ , 128 ),
-        `HOST_NAMED_PORTS_AXI4S_MIN_IF( buf3_ , 128 )
+        `HOST_NAMED_PORTS_AXI4S_MIN_IF( buf3_ , 128 ),
+
+	`HOST_NAMED_PORTS_AXI4S_MIN_IF( dac0_ , 128 ),
+        `HOST_NAMED_PORTS_AXI4S_MIN_IF( dac1_ , 128 )
     );
 
     // UNPACK is 128 -> 96
@@ -77,5 +80,8 @@ module basic_design(
    `ASSIGN( buf1_ , filt_out[1] );
    `ASSIGN( buf2_ , filt_out[2] );
    `ASSIGN( buf3_ , filt_out[3] );   
-        
+
+   `ASSIGN( dac0_ , filt_out[0] );
+   `ASSIGN( dac1_ , filt_out[0] );
+           
 endmodule
