@@ -277,7 +277,11 @@ module zcu111_top(
                                   `CONNECT_AXI4S_MIN_IF( buf0_ , buf0_ ),
                                   `CONNECT_AXI4S_MIN_IF( buf1_ , buf1_ ),
                                   `CONNECT_AXI4S_MIN_IF( buf2_ , buf2_ ),
-                                  `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ));            
+                                  `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ),
+                                  // DACs
+                                  `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ),
+                                  `CONNECT_AXI4S_MIN_IF( dac1_ , design_dac1_ )
+                                  );            
          end
          if (THIS_DESIGN == "BASIC") begin : BSC
             basic_design u_design( .wb_clk_i(ps_clk),
