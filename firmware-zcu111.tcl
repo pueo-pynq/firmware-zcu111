@@ -5,6 +5,7 @@
 # project, it will be autofilled on open.
 
 # Modified AGAIN to make it easier to change!
+# MODIFIED AGAIN AGAIN TO AVOID BLOWING AWAY SOURCE TRACKING FILES
 
 # Set the project name
 set _xil_proj_name_ "firmware-zcu111"
@@ -399,3 +400,9 @@ move_dashboard_gadget -name {drc_1} -row 2 -col 0
 move_dashboard_gadget -name {timing_1} -row 0 -col 1
 move_dashboard_gadget -name {utilization_2} -row 1 -col 1
 move_dashboard_gadget -name {methodology_1} -row 2 -col 1
+
+# Now check to see if there's a per-project open script
+set projinit [ file join $origin_dir "project_init.tcl"]
+if {[file exists $projinit] == 1} {
+    source $projinit
+}
