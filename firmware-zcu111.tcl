@@ -11,7 +11,9 @@
 set _xil_proj_name_ "firmware-zcu111"
 set _this_part xczu28dr-ffvg1517-2-e
 set _this_dir [pwd]
-
+# If this is a board part, you need to set it here too if you want to use the
+# doofy board part stuff.
+set _this_board "xilinx.com:zcu111:part0:1.4"
 
 # Set the reference directory for source file relative paths (by default the value is script directory path)
 set origin_dir "."
@@ -402,6 +404,11 @@ move_dashboard_gadget -name {drc_1} -row 2 -col 0
 move_dashboard_gadget -name {timing_1} -row 0 -col 1
 move_dashboard_gadget -name {utilization_2} -row 1 -col 1
 move_dashboard_gadget -name {methodology_1} -row 2 -col 1
+
+# Auto-check to see if a board part is set
+if {[info exists _this_board] == 1} {
+    set_property board_part $_this_board [current_project]
+}
 
 # Now check to see if there's a per-project open script
 set projinit [ file join $_this_dir "project_init.tcl"]
