@@ -13,6 +13,8 @@ hdl/localwb/boardman_v2_sm.v
 hdl/localwb/boardman_v2_uart.v
 hdl/dac_xfer_x2.v
 verilog-library-barawn/hdl/dsp_counter_terminal_count.v
+verilog-library-barawn/hdl/math/fast_csa32_adder.v
+verilog-library-barawn/hdl/math/fast_csa53_adder.v
 verilog-library-barawn/hdl/srlvec.v
 hdl/localwb/uart/uart_rx6.v
 hdl/localwb/uart/uart_tx6.v
@@ -32,5 +34,3 @@ verilog-library-barawn/hdl/math/square_5bit_accumulator.sv
 pueo-pynq-designs/hdl/agc/xil_tiny_lfsr_3bit.sv
 hdl/zcu111_top.sv
 pueo-pynq-designs/hdl/lowpass_design.sv
-verilog-library-barawn/hdl/math/fast_csa32_adder.v
-verilog-library-barawn/hdl/math/fast_csa53_adder.v
