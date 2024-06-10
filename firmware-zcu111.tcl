@@ -10,6 +10,8 @@
 # Set the project name
 set _xil_proj_name_ "firmware-zcu111"
 set _this_part xczu28dr-ffvg1517-2-e
+set _this_dir [pwd]
+
 
 # Set the reference directory for source file relative paths (by default the value is script directory path)
 set origin_dir "."
@@ -402,7 +404,7 @@ move_dashboard_gadget -name {utilization_2} -row 1 -col 1
 move_dashboard_gadget -name {methodology_1} -row 2 -col 1
 
 # Now check to see if there's a per-project open script
-set projinit [ file join $origin_dir "project_init.tcl"]
+set projinit [ file join $_this_dir "project_init.tcl"]
 if {[file exists $projinit] == 1} {
     source $projinit
 }
