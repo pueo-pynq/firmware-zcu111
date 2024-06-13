@@ -77,14 +77,15 @@ module zcu111_top(
     // DAC AXI4 Stream
     `DEFINE_AXI4S_MIN_IF( dac6_ , 256 );
     `DEFINE_AXI4S_MIN_IF( dac7_ , 256 );
+    
+
 
     // Streams going to readout buffers
     `DEFINE_AXI4S_MIN_IF( buf0_ , 128 );
     `DEFINE_AXI4S_MIN_IF( buf1_ , 128 );
     `DEFINE_AXI4S_MIN_IF( buf2_ , 128 );
     `DEFINE_AXI4S_MIN_IF( buf3_ , 128 );
-        
-    
+            
     // SYSREF capture register
     (* IOB = "TRUE" *)
     reg sysref_reg_slowclk = 0;
@@ -260,6 +261,9 @@ module zcu111_top(
     // NOW we can have multiple designs in one top level thingy
     generate
          if (THIS_DESIGN == "AGC") begin : AGC
+            `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
+            `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
+
             agc_design u_design( .wb_clk_i(ps_clk),
                                  .wb_rst_i(1'b0),
                                  `CONNECT_WBS_IFM( wb_ , bm_ ),
@@ -282,6 +286,18 @@ module zcu111_top(
                                   `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ),
                                   `CONNECT_AXI4S_MIN_IF( dac1_ , design_dac1_ )
                                   );            
+
+            // do the transfers
+            dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
+                                      .aresetn(1'b1),
+                                      .aclk_div2(aclk_div2),
+                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
+                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
+            dac_xfer_x2 u_dac13_xfer( .aclk(aclk),
+                                      .aresetn(1'b1),
+                                      .aclk_div2(aclk_div2),
+                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
+                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
          end
          if (THIS_DESIGN == "BASIC") begin : BSC
             basic_design u_design( .wb_clk_i(ps_clk),
