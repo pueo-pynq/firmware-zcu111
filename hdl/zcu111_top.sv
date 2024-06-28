@@ -327,6 +327,7 @@ module zcu111_top(
                                     `CONNECT_WBS_IFM( wb_ , bm_ ),
                                     .aclk(aclk),
                                     .aresetn(1'b1),
+                                    .capture_i(capture),
                                     `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
                                     `CONNECT_AXI4S_MIN_IF( adc1_ , adc1_ ),
                                     `CONNECT_AXI4S_MIN_IF( adc2_ , adc2_ ),
