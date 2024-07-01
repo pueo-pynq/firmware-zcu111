@@ -182,8 +182,12 @@ module zcu111_top(
                             .RX(uart_from_ps),
                             .TX(uart_to_ps));
 
+    wire capture_div2_clk;
     wire capture;
-
+    flag_sync u_capsync(.clkA(aclk_div2), .clkB(aclk),
+                        .in_clkA(capture_div2_clk),
+                        .out_clkB(capture));
+    
     zcu111_mts_wrapper u_ps( .Vp_Vn_0_v_p( VP ),
                  .Vp_Vn_0_v_n( VN ),
                  
@@ -191,7 +195,7 @@ module zcu111_top(
                  .UART_txd(uart_from_ps),
                  .UART_rxd(uart_to_ps),
                  // indicates someone said capture
-                 .capture_o(capture),
+                 .capture_o(capture_div2_clk),
                  // sysref
                  .sysref_in_0_diff_p( SYSREF_P ),
                  .sysref_in_0_diff_n( SYSREF_N ),
@@ -257,6 +261,8 @@ module zcu111_top(
                  .clk_adc0_0(adc_clk),
     
                  .user_sysref_adc_0(sysref_reg));        
+
+
 
     // NOW we can have multiple designs in one top level thingy
     generate
