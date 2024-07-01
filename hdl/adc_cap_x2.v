@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`define DLYFF #0.1
 // MAX_XFER needs to be a power of 2
 module adc_cap_x2 #(parameter DWIDTH_IN = 128,
                     parameter DWIDTH_OUT = 256,
@@ -74,30 +75,30 @@ module adc_cap_x2 #(parameter DWIDTH_IN = 128,
     reg [255:0] dout_rereg = {256{1'b0}};
 
     always @(posedge aclk) begin
-        fast_clk_phase_rereg <= fast_clk_phase;
-        fast_clk_phase <= slow_clk_phase;
-        capture_upper <= fast_clk_phase != fast_clk_phase_rereg;
+        fast_clk_phase_rereg <= `DLYFF fast_clk_phase;
+        fast_clk_phase <= `DLYFF slow_clk_phase;
+        capture_upper <= `DLYFF fast_clk_phase != fast_clk_phase_rereg;
         
-        if (!capture_upper) din_store <= s_axis_tdata;
+        if (!capture_upper) din_store <= `DLYFF s_axis_tdata;
         // dout is only captured every other clock, so its data is stable
         // in the clk_div2 regime
-        if (capture_upper) dout <= { s_axis_tdata, din_store };
+        if (capture_upper) dout <= `DLYFF { s_axis_tdata, din_store };
     end
     
     always @(posedge clk_i) begin
-        slow_clk_phase <= ~slow_clk_phase;
+        slow_clk_phase <= `DLYFF ~slow_clk_phase;
 
-        dout_rereg <= dout;
+        dout_rereg <= `DLYFF dout;
 
-        capture <= { capture[0], capture_i };
-        start_capture <= capture[0] && !capture[1];
+        capture <= `DLYFF { capture[0], capture_i };
+        start_capture <= `DLYFF capture[0] && !capture[1];
         
         if (start_capture) begin
-            counter <= {ADDR_BITS{1'b0}};
-        end else if (running) counter <= counter_plus_one[ADDR_BITS-1:0];
+            counter <= `DLYFF {ADDR_BITS{1'b0}};
+        end else if (running) counter <= `DLYFF counter_plus_one[ADDR_BITS-1:0];
         
-        if (start_capture) running <= 1;
-        else if (counter_plus_one[ADDR_BITS]) running <= 0;
+        if (start_capture) `DLYFF running <= 1;
+        else if (counter_plus_one[ADDR_BITS]) `DLYFF running <= 0;
     end    
         
     assign bram_addr = this_addr;
