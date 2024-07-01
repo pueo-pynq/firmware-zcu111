@@ -6,7 +6,8 @@
       "name": "zcu111_mts",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2022.2"
+      "tool_version": "2022.2",
+      "validated": "true"
     },
     "design_tree": {
       "zynq_ultra_ps_e_0": "",
@@ -1356,41 +1357,163 @@
     "ports": {
       "clk_adc0_0": {
         "type": "clk",
-        "direction": "O"
+        "direction": "O",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "zcu111_mts_usp_rf_data_converter_0_0_clk_adc0",
+            "value_src": "default_prop"
+          },
+          "FREQ_HZ": {
+            "value": "187500000",
+            "value_src": "user_prop"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
       },
       "pl_clk0": {
         "type": "clk",
-        "direction": "O"
+        "direction": "O",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "zcu111_mts_zynq_ultra_ps_e_0_0_pl_clk0",
+            "value_src": "default_prop"
+          },
+          "FREQ_HZ": {
+            "value": "99999001",
+            "value_src": "user_prop"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
       },
       "pl_resetn0": {
         "type": "rst",
-        "direction": "O"
+        "direction": "O",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
       },
       "s_axi_aclk_0": {
         "type": "clk",
         "direction": "I",
         "parameters": {
+          "ASSOCIATED_BUSIF": {
+            "value": "s12_axis_0:s13_axis_0",
+            "value_src": "default"
+          },
+          "ASSOCIATED_RESET": {
+            "value": "s_axi_aresetn_0",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "zcu111_mts_s_axi_aclk_0",
+            "value_src": "default"
+          },
           "FREQ_HZ": {
             "value": "187500000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
           }
         }
       },
       "s_axi_aresetn_0": {
         "type": "rst",
-        "direction": "I"
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
       },
       "s_axis_aclk_0": {
         "type": "clk",
         "direction": "I",
         "parameters": {
+          "ASSOCIATED_BUSIF": {
+            "value": "S_AXIS_0:S_AXIS_1:S_AXIS_2:S_AXIS_3:m00_axis_0:m02_axis_0:m10_axis_0:m12_axis_0:m20_axis_0:m22_axis_0:m30_axis_0:m32_axis_0",
+            "value_src": "default"
+          },
+          "ASSOCIATED_RESET": {
+            "value": "s_axis_aresetn_0",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "zcu111_mts_s_axis_aclk_0",
+            "value_src": "default"
+          },
           "FREQ_HZ": {
             "value": "375000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
           }
         }
       },
       "s_axis_aresetn_0": {
         "type": "rst",
-        "direction": "I"
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
       },
       "user_sysref_adc_0": {
         "direction": "I"
