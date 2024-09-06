@@ -6,6 +6,7 @@ hdl/localwb/cobs/axis_cobs_decode.v
 hdl/localwb/cobs/axis_cobs_encode.v
 hdl/localwb/cobs/axis_fifo.v
 verilog-library-barawn/hdl/filters/biquad8_pole_fir.v
+verilog-library-barawn/hdl/filters/biquad8_pole_iir.v
 verilog-library-barawn/hdl/filters/biquad8_single_zero_fir.v
 hdl/localwb/boardman_interface_v2.v
 hdl/localwb/boardman_v2_cobs.v
