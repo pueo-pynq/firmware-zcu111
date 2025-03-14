@@ -53,7 +53,7 @@ module zcu111_top(
         output [1:0] PL_USER_LED        // { AP13, AR13 }
     );
 
-   parameter	     THIS_DESIGN = "BIQUAD";
+   parameter	     THIS_DESIGN = "FILTER_CHAIN";
    
     
     (* KEEP = "TRUE"  *)
@@ -266,48 +266,47 @@ module zcu111_top(
 
     // NOW we can have multiple designs in one top level thingy
     generate
-         if (THIS_DESIGN == "AGC") begin : AGC
+        if (THIS_DESIGN == "AGC") begin : AGC
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
 
             agc_design u_design( .wb_clk_i(ps_clk),
-                                 .wb_rst_i(1'b0),
-                                 `CONNECT_WBS_IFM( wb_ , bm_ ),
-                                 .aclk(aclk),
-                                 .aresetn(1'b1),
-                                  `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
-                                  `CONNECT_AXI4S_MIN_IF( adc1_ , adc1_ ),
-                                  `CONNECT_AXI4S_MIN_IF( adc2_ , adc2_ ),
-                                  `CONNECT_AXI4S_MIN_IF( adc3_ , adc3_ ),
-                                  `CONNECT_AXI4S_MIN_IF( adc4_ , adc4_ ),
-                                  `CONNECT_AXI4S_MIN_IF( adc5_ , adc5_ ),
-                                  `CONNECT_AXI4S_MIN_IF( adc6_ , adc6_ ),
-                                  `CONNECT_AXI4S_MIN_IF( adc7_ , adc7_ ),
-                                  // buffers
-                                  `CONNECT_AXI4S_MIN_IF( buf0_ , buf0_ ),
-                                  `CONNECT_AXI4S_MIN_IF( buf1_ , buf1_ ),
-                                  `CONNECT_AXI4S_MIN_IF( buf2_ , buf2_ ),
-                                  `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ),
-                                  // DACs
-                                  `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ),
-                                  `CONNECT_AXI4S_MIN_IF( dac1_ , design_dac1_ )
-                                  );            
+                                    .wb_rst_i(1'b0),
+                                    `CONNECT_WBS_IFM( wb_ , bm_ ),
+                                    .aclk(aclk),
+                                    .aresetn(1'b1),
+                                    `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc1_ , adc1_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc2_ , adc2_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc3_ , adc3_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc4_ , adc4_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc5_ , adc5_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc6_ , adc6_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc7_ , adc7_ ),
+                                    // buffers
+                                    `CONNECT_AXI4S_MIN_IF( buf0_ , buf0_ ),
+                                    `CONNECT_AXI4S_MIN_IF( buf1_ , buf1_ ),
+                                    `CONNECT_AXI4S_MIN_IF( buf2_ , buf2_ ),
+                                    `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ),
+                                    // DACs
+                                    `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ),
+                                    `CONNECT_AXI4S_MIN_IF( dac1_ , design_dac1_ )
+                                    );            
 
             // do the transfers
             dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
-                                      .aresetn(1'b1),
-                                      .aclk_div2(aclk_div2),
-                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
-                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
             dac_xfer_x2 u_dac13_xfer( .aclk(aclk),
-                                      .aresetn(1'b1),
-                                      .aclk_div2(aclk_div2),
-                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
-                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
-         end
-         if (THIS_DESIGN == "BASIC") begin : BSC
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
+        end else if (THIS_DESIGN == "BASIC") begin : BSC
             basic_design u_design( .wb_clk_i(ps_clk),
-                                   .wb_rst_i(1'b0),
+                                    .wb_rst_i(1'b0),
                                     `CONNECT_WBS_IFS( wb_ , bm_ ),
                                     .aclk(aclk),
                                     .aresetn(1'b1),
@@ -324,7 +323,7 @@ module zcu111_top(
                                     `CONNECT_AXI4S_MIN_IF( buf1_ , buf1_ ),
                                     `CONNECT_AXI4S_MIN_IF( buf2_ , buf2_ ),
                                     `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ));                                   
-         end else if (THIS_DESIGN == "BIQUAD") begin : MTS
+        end else if (THIS_DESIGN == "BIQUAD") begin : BIQUAD_DESIGN
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
             
@@ -352,16 +351,37 @@ module zcu111_top(
                                     `CONNECT_AXI4S_MIN_IF( dac1_ , design_dac1_ ));
             // do the transfers
             dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
-                                      .aresetn(1'b1),
-                                      .aclk_div2(aclk_div2),
-                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
-                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
             dac_xfer_x2 u_dac13_xfer( .aclk(aclk),
-                                      .aresetn(1'b1),
-                                      .aclk_div2(aclk_div2),
-                                      `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
-                                      `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
-                                 
-         end                     
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));                              
+        end else if (THIS_DESIGN == "FILTER_CHAIN") begin : FILTER_CHAIN
+            `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
+            `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
+            
+            biquad8_design_double u_design( .wb_clk_i(ps_clk),
+                                            .wb_rst_i(1'b0),
+                                            `CONNECT_WBS_IFM( wb_ , bm_ ),
+                                            .aclk(aclk),
+                                            .aresetn(1'b1),
+                                            .capture_i(capture),
+                                            `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
+                                            // buffers
+                                            `CONNECT_AXI4S_MIN_IF( buf0_ , buf0_ ),
+                                            // DACs
+                                            `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ));
+            // do the transfers
+            dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
+
+        end                     
     endgenerate        
 endmodule
