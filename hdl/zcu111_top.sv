@@ -424,6 +424,8 @@ module zcu111_top(
                                             `CONNECT_AXI4S_MIN_IF( adc7_ , adc7_ ),
                                             // Buffers
                                             `CONNECT_AXI4S_MIN_IF( buf0_ , buf0_ ),
+                                            `CONNECT_AXI4S_MIN_IF( buf1_ , buf1_ ),
+                                            `CONNECT_AXI4S_MIN_IF( buf2_ , buf2_ ),
                                             // DACs
                                             `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ));
             // do the transfers
