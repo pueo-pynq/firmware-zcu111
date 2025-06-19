@@ -1,6 +1,8 @@
 `timescale 1ns / 1ps
 `include "interfaces.vh"
 
+`define USING_DEBUG 1
+
 // ZCU111 top module for messing around with the RFDC.
 module zcu111_top(
         // analog input for SysMon
@@ -425,7 +427,10 @@ module zcu111_top(
                                             // Buffers
                                             `CONNECT_AXI4S_MIN_IF( buf0_ , buf0_ ),
                                             `CONNECT_AXI4S_MIN_IF( buf1_ , buf1_ ),
+                                            `ifdef USING_DEBUG
                                             `CONNECT_AXI4S_MIN_IF( buf2_ , buf2_ ),
+                                            `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ),
+                                            `endif
                                             // DACs
                                             `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ));
             // do the transfers
