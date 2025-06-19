@@ -400,7 +400,7 @@ module zcu111_top(
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
 
-        end  else if (THIS_DESIGN == "FULL_SYSTEM") begin : FILTER_CHAIN
+        end  else if (THIS_DESIGN == "FULL_SYSTEM") begin : FULL_SYSTEM
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac2_ , 128 );
