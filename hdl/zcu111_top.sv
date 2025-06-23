@@ -432,13 +432,21 @@ module zcu111_top(
                                             `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ),
                                             `endif
                                             // DACs
-                                            `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ));
-            // do the transfers
-            dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
+                                            `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ), 
+                                            `CONNECT_AXI4S_MIN_IF( dac1_ , design_dac1_ ));
+             // do the transfers 
+            dac_xfer_x2 u_dac12_xfer(   .aclk(aclk),
                                         .aresetn(1'b1),
                                         .aclk_div2(aclk_div2),
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
+            dac_xfer_x2 u_dac13_xfer(   .aclk(aclk),
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
+                                        // do the transfers
+
 
         end                   
     endgenerate        
