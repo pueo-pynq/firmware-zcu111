@@ -1,8 +1,6 @@
 `timescale 1ns / 1ps
 `include "interfaces.vh"
 
-`define USING_DEBUG 1
-
 // ZCU111 top module for messing around with the RFDC.
 module zcu111_top(
         // analog input for SysMon
