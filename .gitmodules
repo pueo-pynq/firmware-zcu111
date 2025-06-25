@@ -4,3 +4,6 @@
 [submodule "pueo-pynq-designs"]
 	path = pueo-pynq-designs
 	url = git@github.com:pueo-pynq/pueo-pynq-designs.git
+[submodule "pueo-surf-trigger"]
+	path = pueo-surf-trigger
+	url = https://github.com/barawn/pueo-surf-trigger.git
