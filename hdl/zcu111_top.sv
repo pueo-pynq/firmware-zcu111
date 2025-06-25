@@ -53,7 +53,7 @@ module zcu111_top(
         output [1:0] PL_USER_LED        // { AP13, AR13 }
     );
 
-   parameter	     THIS_DESIGN = "GAUSSER";
+   parameter	     THIS_DESIGN = "FULL_SYSTEM";
    
     
     (* KEEP = "TRUE"  *)
