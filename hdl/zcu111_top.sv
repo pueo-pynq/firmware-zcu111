@@ -402,7 +402,6 @@ module zcu111_top(
                                         .aclk_div2(aclk_div2),
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
-
         end  else if (THIS_DESIGN == "MATCHED_FILTER") begin : FULL_SYSTEM
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
@@ -440,7 +439,6 @@ module zcu111_top(
                                         .aclk_div2(aclk_div2),
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));   
-
         end else if (THIS_DESIGN == "GAUSSER") begin : FULL_SYSTEM
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
@@ -478,7 +476,6 @@ module zcu111_top(
                                         .aclk_div2(aclk_div2),
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));   
-
         end else if (THIS_DESIGN == "FULL_SYSTEM") begin : FULL_SYSTEM
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
@@ -490,10 +487,10 @@ module zcu111_top(
             `DEFINE_AXI4S_MIN_IF( design_dac7_ , 128 );
             
             L1_trigger_wrapper_design #(    .NBEAMS(48), .AGC_TIMESCALE_REDUCTION_BITS(1) )
-                            u_design(       .wb_clk_i(ps_clk),
+                            u_design(       .wb_clk_i(!ps_resetn),
                                             .wb_rst_i(1'b0),
                                             `CONNECT_WBS_IFM( wb_ , bm_ ), 
-                                            .reset_i(1'b0), 
+                                            .reset_i(!ps_resetn), 
                                             .aclk(aclk),
                                             `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
                                             `CONNECT_AXI4S_MIN_IF( adc1_ , adc1_ ),
