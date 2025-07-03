@@ -55,11 +55,13 @@ module zcu111_top(
 
    parameter	     THIS_DESIGN = "FULL_SYSTEM";
    
+
+    `define ADDR_MATCH( addr, val, mask ) ( ( addr & mask ) == (val & mask) )
     
     (* KEEP = "TRUE"  *)
     wire ps_clk;
     wire ps_resetn;
-    
+
     // ADC AXI4-Stream clock.
     wire aclk;
     // divided by 2
@@ -171,6 +173,7 @@ module zcu111_top(
     wire uart_to_ps;
     
     `DEFINE_WB_IF( bm_ , 22, 32);
+    
     boardman_wrapper #(.CLOCK_RATE(100000000),
                        .BAUD_RATE(1000000),
                        .USE_ADDRESS("FALSE"))
@@ -486,11 +489,33 @@ module zcu111_top(
             `DEFINE_AXI4S_MIN_IF( design_dac6_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac7_ , 128 );
             
+            reg wb_reset_signal;
+
+            `DEFINE_WB_IF( wb_ , 22, 32);
+            always @(posedge ps_clk) begin
+                wb_reset_signal = `ADDR_MATCH(bm_adr_i, 22'h008000, 22'h7FFFFF) && bm_cyc_i && bm_stb_i && bm_we_i && bm_dat_i[0];
+            end
+
+    
+            // Top interface target (S)        Connection interface (M)
+            assign bm_ack_o = (bm_adr_i[15]) ? wb_reset_signal  : wb_ack_i;
+            assign bm_err_o = (bm_adr_i[15]) ? 1'b0             : wb_err_i;
+            assign bm_rty_o = (bm_adr_i[15]) ? 1'b0             : wb_rty_i;
+            assign bm_dat_o = (bm_adr_i[15]) ? 0                : wb_dat_i;
+            
+
+            assign wb_cyc_o = bm_cyc_i && !wb_adr_i[15];
+            assign wb_stb_o = bm_stb_i;
+            assign wb_adr_o = bm_adr_i;
+            assign wb_dat_o = bm_dat_i;
+            assign wb_we_o  = bm_we_i;
+            assign wb_sel_o = bm_sel_i;  
+
             L1_trigger_wrapper_design #(    .NBEAMS(48), .AGC_TIMESCALE_REDUCTION_BITS(1) )
-                            u_design(       .wb_clk_i(!ps_resetn),
-                                            .wb_rst_i(1'b0),
-                                            `CONNECT_WBS_IFM( wb_ , bm_ ), 
-                                            .reset_i(!ps_resetn), 
+                            u_design(       .wb_clk_i(ps_clk),
+                                            .wb_rst_i(wb_reset_signal),
+                                            `CONNECT_WBS_IFM( wb_ , wb_ ), 
+                                            .reset_i(wb_reset_signal), 
                                             .aclk(aclk),
                                             `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
                                             `CONNECT_AXI4S_MIN_IF( adc1_ , adc1_ ),
