@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 `include "interfaces.vh"
+`include "debug_enable.vh"
 
 // ZCU111 top module for messing around with the RFDC.
 module zcu111_top(
@@ -405,7 +406,7 @@ module zcu111_top(
                                         .aclk_div2(aclk_div2),
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));
-        end  else if (THIS_DESIGN == "MATCHED_FILTER") begin : FULL_SYSTEM
+        end  else if (THIS_DESIGN == "MATCHED_FILTER") begin : MATCHED_FILTER_DESIGN
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
             
@@ -442,7 +443,7 @@ module zcu111_top(
                                         .aclk_div2(aclk_div2),
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));   
-        end else if (THIS_DESIGN == "GAUSSER") begin : FULL_SYSTEM
+        end else if (THIS_DESIGN == "GAUSSER") begin : GAUSSER_DEISGN
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
             
@@ -489,33 +490,36 @@ module zcu111_top(
             `DEFINE_AXI4S_MIN_IF( design_dac6_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac7_ , 128 );
             
-            reg wb_reset_signal;
+            reg wb_reset_signal = 0;
+            wire aclk_reset_signal;
 
             `DEFINE_WB_IF( wb_ , 22, 32);
             always @(posedge ps_clk) begin
-                wb_reset_signal = `ADDR_MATCH(bm_adr_i, 22'h008000, 22'h7FFFFF) && bm_cyc_i && bm_stb_i && bm_we_i && bm_dat_i[0];
+                wb_reset_signal = `ADDR_MATCH(bm_adr_o, 22'h008000, 22'h7FFFFF) && bm_cyc_o && bm_stb_o && bm_we_o;
             end
+
+            flag_sync u_refdone(.in_clkA(wb_reset_signal),.clkA(ps_clk),.out_clkB(aclk_reset_signal),.clkB(aclk));
 
     
             // Top interface target (S)        Connection interface (M)
-            assign bm_ack_o = (bm_adr_i[15]) ? wb_reset_signal  : wb_ack_i;
-            assign bm_err_o = (bm_adr_i[15]) ? 1'b0             : wb_err_i;
-            assign bm_rty_o = (bm_adr_i[15]) ? 1'b0             : wb_rty_i;
-            assign bm_dat_o = (bm_adr_i[15]) ? 0                : wb_dat_i;
+            assign bm_ack_i = (bm_adr_o[15]) ? wb_reset_signal  : wb_ack_i;
+            assign bm_err_i = (bm_adr_o[15]) ? 1'b0             : wb_err_i;
+            assign bm_rty_i = (bm_adr_o[15]) ? 1'b0             : wb_rty_i;
+            assign bm_dat_i = (bm_adr_o[15]) ? 0                : wb_dat_i;
             
 
-            assign wb_cyc_o = bm_cyc_i && !wb_adr_i[15];
-            assign wb_stb_o = bm_stb_i;
-            assign wb_adr_o = bm_adr_i;
-            assign wb_dat_o = bm_dat_i;
-            assign wb_we_o  = bm_we_i;
-            assign wb_sel_o = bm_sel_i;  
+            assign wb_cyc_o = bm_cyc_o && !wb_adr_o[15];
+            assign wb_stb_o = bm_stb_o;
+            assign wb_adr_o = bm_adr_o;
+            assign wb_dat_o = bm_dat_o;
+            assign wb_we_o  = bm_we_o;
+            assign wb_sel_o = bm_sel_o;  
 
-            L1_trigger_wrapper_design #(    .NBEAMS(48), .AGC_TIMESCALE_REDUCTION_BITS(1) )
+            L1_trigger_wrapper_design #(    .NBEAMS(46), .AGC_TIMESCALE_REDUCTION_BITS(1) )
                             u_design(       .wb_clk_i(ps_clk),
                                             .wb_rst_i(wb_reset_signal),
                                             `CONNECT_WBS_IFM( wb_ , wb_ ), 
-                                            .reset_i(wb_reset_signal), 
+                                            .reset_i(aclk_reset_signal), //LL Clock cross this flag
                                             .aclk(aclk),
                                             `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
                                             `CONNECT_AXI4S_MIN_IF( adc1_ , adc1_ ),

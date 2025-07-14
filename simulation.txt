@@ -1,2 +1,15 @@
 verilog-library-barawn/sim/tb_rclock.sv
+pueo-pynq-designs/sim/L1_trigger_wrapper_tb.sv
+pueo-pynq-designs/sim/Gaussian12b_LFSR_tb.sv
+pueo-pynq-designs/sim/L1_trigger_tb.sv
+pueo-pynq-designs/sim/LFSR_tb.sv
+verilog-library-barawn/hdl/filters/biquad8_pole_fir_tb.sv
 verilog-library-barawn/hdl/filters/biquad8_wrapper_tb.sv
+pueo-pynq-designs/sim/dual_pueo_beam_dsp_tb.sv
+pueo-pynq-designs/sim/dual_pueo_beam_tb.sv
+pueo-pynq-designs/sim/fivebit_8way_ternary_tb.sv
+pueo-pynq-designs/sim/signed_8b_square_tb.sv
+pueo-pynq-designs/sim/trigger_chain_tb.sv
+pueo-pynq-designs/sim/trigger_chain_x8_tb.sv
+pueo-pynq-designs/sim/beamform_trigger_tb.sv
+vivado_project/L1_trigger_wrapper_tb_behav.wcfg
