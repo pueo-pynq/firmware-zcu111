@@ -54,7 +54,7 @@ module zcu111_top(
         output [1:0] PL_USER_LED        // { AP13, AR13 }
     );
 
-   parameter	     THIS_DESIGN = "SYSTOLIC_FILTER";
+   parameter	     THIS_DESIGN = "PULSER";
    
 
     `define ADDR_MATCH( addr, val, mask ) ( ( addr & mask ) == (val & mask) )
@@ -480,13 +480,50 @@ module zcu111_top(
                                         .aclk_div2(aclk_div2),
                                         `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
                                         `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));   
-        end else if (THIS_DESIGN == "GAUSSER") begin : GAUSSER_DEISGN
+        end else if (THIS_DESIGN == "GAUSSER") begin : GAUSSER_DESIGN
             `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
             `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
             
             noise_design u_design(.wb_clk_i(ps_clk),
                                     .wb_rst_i(1'b0),
                                     `CONNECT_WBS_IFM( wb_ , bm_ ),
+                                    .aclk(aclk),
+                                    .aresetn(1'b1),
+                                    .capture_i(capture),
+                                    `CONNECT_AXI4S_MIN_IF( adc0_ , adc0_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc1_ , adc1_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc2_ , adc2_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc3_ , adc3_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc4_ , adc4_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc5_ , adc5_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc6_ , adc6_ ),
+                                    `CONNECT_AXI4S_MIN_IF( adc7_ , adc7_ ),
+                                    // buffers
+                                    `CONNECT_AXI4S_MIN_IF( buf0_ , buf0_ ),
+                                    `CONNECT_AXI4S_MIN_IF( buf1_ , buf1_ ),
+                                    `CONNECT_AXI4S_MIN_IF( buf2_ , buf2_ ),
+                                    `CONNECT_AXI4S_MIN_IF( buf3_ , buf3_ ),
+                                    // DACs
+                                    `CONNECT_AXI4S_MIN_IF( dac0_ , design_dac0_ ),
+                                    `CONNECT_AXI4S_MIN_IF( dac1_ , design_dac1_ ));
+            // do the transfers
+            dac_xfer_x2 u_dac12_xfer( .aclk(aclk),
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac0_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac6_ ));
+            dac_xfer_x2 u_dac13_xfer( .aclk(aclk),
+                                        .aresetn(1'b1),
+                                        .aclk_div2(aclk_div2),
+                                        `CONNECT_AXI4S_MIN_IF( s_axis_ , design_dac1_ ),
+                                        `CONNECT_AXI4S_MIN_IF( m_axis_ , dac7_ ));   
+        end else if (THIS_DESIGN == "PULSER") begin : PULSER_DESIGN
+            `DEFINE_AXI4S_MIN_IF( design_dac0_ , 128 );
+            `DEFINE_AXI4S_MIN_IF( design_dac1_ , 128 );
+            
+            pulser_design u_design(//.wb_clk_i(ps_clk),
+                                    //.wb_rst_i(1'b0),
+                                    //`CONNECT_WBS_IFM( wb_ , bm_ ),
                                     .aclk(aclk),
                                     .aresetn(1'b1),
                                     .capture_i(capture),
@@ -552,7 +589,7 @@ module zcu111_top(
             assign wb_we_o  = bm_we_o;
             assign wb_sel_o = bm_sel_o;  
 
-            L1_trigger_wrapper_design #(    .NBEAMS(46), .AGC_TIMESCALE_REDUCTION_BITS(1) )
+            L1_trigger_wrapper_design #(    .NBEAMS(46), .AGC_TIMESCALE_REDUCTION_BITS(1), .USE_TAIL_FRACTION("TRUE") )
                             u_design(       .wb_clk_i(ps_clk),
                                             .wb_rst_i(wb_reset_signal),
                                             `CONNECT_WBS_IFM( wb_ , wb_ ), 
